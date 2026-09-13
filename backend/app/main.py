@@ -16,7 +16,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 
 app = FastAPI(
-    title="Football League Scoreboard API",
+    title="KickPulse — Sports League Scoreboard",
     version="1.0.0",
     lifespan=lifespan,
 )
