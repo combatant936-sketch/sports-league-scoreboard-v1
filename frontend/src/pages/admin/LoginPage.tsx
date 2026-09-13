@@ -38,7 +38,6 @@ export function LoginPage() {
           <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem' }}>League Administration</p>
         </div>
         <h1>Admin Sign In</h1>
-        <p className="hint">Demo: admin@league.com / admin123</p>
         <form onSubmit={handleSubmit} className="form">
           <label>
             Email
