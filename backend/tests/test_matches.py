@@ -135,3 +135,43 @@ def test_cancel_match_clears_events(client: TestClient, auth_headers: dict[str, 
     assert cancel.status_code == 200
     assert cancel.json()["status"] == "cancelled"
     assert client.get(f"/matches/{match_id}/events").json() == []
+
+
+def test_cannot_finish_scheduled_match(client: TestClient, auth_headers: dict[str, str]):
+    # match-3 is scheduled
+    response = client.post("/matches/match-3/finish", headers=auth_headers)
+    assert response.status_code == 400
+    assert "live" in response.json()["detail"]["message"].lower()
+
+
+def test_cannot_cancel_finished_match(client: TestClient, auth_headers: dict[str, str]):
+    # match-1 is finished
+    response = client.post("/matches/match-1/cancel", headers=auth_headers)
+    assert response.status_code == 400
+    assert "finished" in response.json()["detail"]["message"].lower()
+
+
+def test_update_scheduled_match(client: TestClient, auth_headers: dict[str, str]):
+    # match-3 is scheduled
+    response = client.patch(
+        "/matches/match-3",
+        headers=auth_headers,
+        json={
+            "scheduledAt": "2026-11-01T12:00:00.000Z",
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["scheduledAt"].startswith("2026-11-01")
+
+
+def test_update_finished_match_fails(client: TestClient, auth_headers: dict[str, str]):
+    # match-1 is finished
+    response = client.patch(
+        "/matches/match-1",
+        headers=auth_headers,
+        json={
+            "scheduledAt": "2026-11-01T12:00:00.000Z",
+        },
+    )
+    assert response.status_code == 400
+    assert "scheduled" in response.json()["detail"]["message"].lower()

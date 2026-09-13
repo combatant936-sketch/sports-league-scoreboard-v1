@@ -6,16 +6,18 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.auth.dependencies import get_current_user, require_auth
 from app.auth.tokens import create_token, revoke_token
 from app.models.schemas import AuthUser, LoginCredentials, LoginResponse
-from app.store import get_store
+from app.store import Database, get_db
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 _bearer = HTTPBearer(auto_error=False)
 
 
 @router.post("/login", response_model=LoginResponse)
-def login(credentials: LoginCredentials) -> LoginResponse:
-    store = get_store()
-    if not store.verify_admin(credentials.email, credentials.password):
+def login(
+    credentials: LoginCredentials,
+    db: Annotated[Database, Depends(get_db)],
+) -> LoginResponse:
+    if not db.verify_admin(credentials.email, credentials.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail={"message": "Invalid email or password"},

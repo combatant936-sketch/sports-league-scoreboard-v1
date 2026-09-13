@@ -12,7 +12,7 @@ from app.models.schemas import (
     MatchStatus,
     UpdateMatchInput,
 )
-from app.store import get_store
+from app.store import Database, get_db
 
 router = APIRouter(prefix="/matches", tags=["Matches"])
 
@@ -27,18 +27,20 @@ def _event_not_found() -> HTTPException:
 
 @router.get("", response_model=list[Match])
 def list_matches(
+    db: Annotated[Database, Depends(get_db)],
     status_filter: Annotated[Optional[MatchStatus], Query(alias="status")] = None,
 ) -> list[Match]:
-    return get_store().list_matches(status_filter)
+    return db.list_matches(status_filter)
 
 
 @router.post("", response_model=Match, status_code=status.HTTP_201_CREATED)
 def create_match(
     data: CreateMatchInput,
+    db: Annotated[Database, Depends(get_db)],
     _: Annotated[AuthUser, Depends(require_auth)],
 ) -> Match:
     try:
-        return get_store().create_match(data)
+        return db.create_match(data)
     except LookupError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": "Team not found"})
     except ValueError as exc:
@@ -46,9 +48,9 @@ def create_match(
 
 
 @router.get("/{match_id}", response_model=Match)
-def get_match(match_id: str) -> Match:
+def get_match(match_id: str, db: Annotated[Database, Depends(get_db)]) -> Match:
     try:
-        return get_store().get_match(match_id)
+        return db.get_match(match_id)
     except LookupError:
         raise _match_not_found()
 
@@ -57,10 +59,11 @@ def get_match(match_id: str) -> Match:
 def update_match(
     match_id: str,
     data: UpdateMatchInput,
+    db: Annotated[Database, Depends(get_db)],
     _: Annotated[AuthUser, Depends(require_auth)],
 ) -> Match:
     try:
-        return get_store().update_match(match_id, data)
+        return db.update_match(match_id, data)
     except LookupError:
         raise _match_not_found()
     except ValueError as exc:
@@ -70,10 +73,11 @@ def update_match(
 @router.post("/{match_id}/start", response_model=Match)
 def start_match(
     match_id: str,
+    db: Annotated[Database, Depends(get_db)],
     _: Annotated[AuthUser, Depends(require_auth)],
 ) -> Match:
     try:
-        return get_store().start_match(match_id)
+        return db.start_match(match_id)
     except LookupError:
         raise _match_not_found()
     except ValueError as exc:
@@ -83,10 +87,11 @@ def start_match(
 @router.post("/{match_id}/cancel", response_model=Match)
 def cancel_match(
     match_id: str,
+    db: Annotated[Database, Depends(get_db)],
     _: Annotated[AuthUser, Depends(require_auth)],
 ) -> Match:
     try:
-        return get_store().cancel_match(match_id)
+        return db.cancel_match(match_id)
     except LookupError:
         raise _match_not_found()
     except ValueError as exc:
@@ -96,10 +101,11 @@ def cancel_match(
 @router.post("/{match_id}/finish", response_model=Match)
 def finish_match(
     match_id: str,
+    db: Annotated[Database, Depends(get_db)],
     _: Annotated[AuthUser, Depends(require_auth)],
 ) -> Match:
     try:
-        return get_store().finish_match(match_id)
+        return db.finish_match(match_id)
     except LookupError:
         raise _match_not_found()
     except ValueError as exc:
@@ -107,9 +113,9 @@ def finish_match(
 
 
 @router.get("/{match_id}/events", response_model=list[MatchEvent], tags=["Match Events"])
-def list_events(match_id: str) -> list[MatchEvent]:
+def list_events(match_id: str, db: Annotated[Database, Depends(get_db)]) -> list[MatchEvent]:
     try:
-        return get_store().list_events(match_id)
+        return db.list_events(match_id)
     except LookupError:
         raise _match_not_found()
 
@@ -118,10 +124,11 @@ def list_events(match_id: str) -> list[MatchEvent]:
 def add_event(
     match_id: str,
     data: CreateEventInput,
+    db: Annotated[Database, Depends(get_db)],
     _: Annotated[AuthUser, Depends(require_auth)],
 ) -> MatchEvent:
     try:
-        return get_store().add_event(match_id, data)
+        return db.add_event(match_id, data)
     except LookupError as exc:
         msg = str(exc)
         if "Event" in msg:
@@ -135,10 +142,11 @@ def add_event(
 def remove_event(
     match_id: str,
     event_id: str,
+    db: Annotated[Database, Depends(get_db)],
     _: Annotated[AuthUser, Depends(require_auth)],
 ) -> None:
     try:
-        get_store().remove_event(match_id, event_id)
+        db.remove_event(match_id, event_id)
     except LookupError as exc:
         msg = str(exc)
         if "Match" in msg:

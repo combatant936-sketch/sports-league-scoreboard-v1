@@ -31,7 +31,7 @@ export function PublicLayout() {
         <Outlet />
       </main>
       <footer className="site-footer">
-        Football League Scoreboard — mock data mode
+        Football League Scoreboard
       </footer>
     </div>
   );

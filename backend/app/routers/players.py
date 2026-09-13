@@ -4,31 +4,35 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.auth.dependencies import require_auth
 from app.models.schemas import AuthUser, CreatePlayerInput, Player, UpdatePlayerInput
-from app.store import get_store
+from app.store import Database, get_db
 
 router = APIRouter(prefix="/players", tags=["Players"])
 
 
 @router.get("", response_model=list[Player])
-def list_players(team_id: Annotated[Optional[str], Query(alias="teamId")] = None) -> list[Player]:
-    return get_store().list_players(team_id)
+def list_players(
+    db: Annotated[Database, Depends(get_db)],
+    team_id: Annotated[Optional[str], Query(alias="teamId")] = None,
+) -> list[Player]:
+    return db.list_players(team_id)
 
 
 @router.post("", response_model=Player, status_code=status.HTTP_201_CREATED)
 def create_player(
     data: CreatePlayerInput,
+    db: Annotated[Database, Depends(get_db)],
     _: Annotated[AuthUser, Depends(require_auth)],
 ) -> Player:
     try:
-        return get_store().create_player(data)
+        return db.create_player(data)
     except LookupError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": "Team not found"})
 
 
 @router.get("/{player_id}", response_model=Player)
-def get_player(player_id: str) -> Player:
+def get_player(player_id: str, db: Annotated[Database, Depends(get_db)]) -> Player:
     try:
-        return get_store().get_player(player_id)
+        return db.get_player(player_id)
     except LookupError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": "Player not found"})
 
@@ -37,10 +41,11 @@ def get_player(player_id: str) -> Player:
 def update_player(
     player_id: str,
     data: UpdatePlayerInput,
+    db: Annotated[Database, Depends(get_db)],
     _: Annotated[AuthUser, Depends(require_auth)],
 ) -> Player:
     try:
-        return get_store().update_player(player_id, data)
+        return db.update_player(player_id, data)
     except LookupError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": str(exc)})
 
@@ -48,10 +53,11 @@ def update_player(
 @router.delete("/{player_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_player(
     player_id: str,
+    db: Annotated[Database, Depends(get_db)],
     _: Annotated[AuthUser, Depends(require_auth)],
 ) -> None:
     try:
-        get_store().delete_player(player_id)
+        db.delete_player(player_id)
     except LookupError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"message": "Player not found"})
     except ValueError as exc:

@@ -1,11 +1,24 @@
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.db.engine import get_engine
+from app.db.init import init_db
 from app.routers import api_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    init_db(get_engine())
+    yield
+
 
 app = FastAPI(
     title="Football League Scoreboard API",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
