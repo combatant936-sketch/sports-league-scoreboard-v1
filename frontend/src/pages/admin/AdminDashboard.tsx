@@ -20,7 +20,7 @@ export function AdminDashboard() {
       <div className="admin-page-header">
         <div>
           <h1>Admin Dashboard</h1>
-          <p>{league.data?.name} — {league.data?.season}</p>
+          <p>KickPulse • {league.data?.name} ({league.data?.season})</p>
         </div>
         <button type="button" className="btn secondary" onClick={() => logout()}>
           Logout

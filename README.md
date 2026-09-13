@@ -1,6 +1,6 @@
-# ⚽ Sports League Scoreboard
+# ⚽ KickPulse — Sports League Scoreboard
 
-> A modern, full-stack sports league management and real-time scoreboard application. Built with **FastAPI**, **SQLAlchemy 2.0**, **React 19**, **TypeScript**, and **Vite**, featuring a database-agnostic backend, dynamic live scoring, automatic standings calculation, and a role-based admin control portal.
+> **KickPulse** is a modern, full-stack sports league management and real-time scoreboard application. Built with **FastAPI**, **SQLAlchemy 2.0**, **React 19**, **TypeScript**, and **Vite**, featuring a database-agnostic backend, dynamic live scoring, automatic standings calculation, and a role-based admin control portal.
 
 ---
 
@@ -18,6 +18,7 @@
   - [Prerequisites](#prerequisites)
   - [Quickstart (Using Makefile)](#quickstart-using-makefile)
   - [Manual Setup (Without Makefile)](#manual-setup-without-makefile)
+- [Quick Reference: Core Commands & URLs](#-quick-reference-core-commands--urls)
 - [Database Configuration & Persistence](#-database-configuration--persistence)
   - [Supported Databases](#supported-databases)
   - [Automatic Schema Creation & Seeding](#automatic-schema-creation--seeding)
@@ -363,6 +364,18 @@ npm run dev
 
 ---
 
+## ⚡ Quick Reference: Core Commands & URLs
+
+| # | Question / Task | Command / Value | Source / Config |
+| :---: | :--- | :--- | :--- |
+| **1** | **Start Frontend** | `make dev-frontend`<br>*(or `cd frontend && npm run dev`)* | Runs the Vite development server on port `5173`. |
+| **2** | **Start Backend** | `make dev-backend`<br>*(or `cd backend && uv run uvicorn app.main:app --reload --port 8000`)* | Runs the FastAPI app with Uvicorn on port `8000`. |
+| **3** | **Frontend → Backend URL** | **`http://localhost:8000`** | Set via `BASE_URL` in [`frontend/src/api/client.ts`](frontend/src/api/client.ts). |
+| **4** | **Run Tests** | `make test`<br>*(or `cd backend && uv run pytest -v`)* | Executes 39 unit/integration tests with `pytest`. |
+| **—** | **Run Stack Concurrently** | `make dev` | Spawns both backend and frontend dev servers together in parallel. |
+
+---
+
 ## 🗄️ Database Configuration & Persistence
 
 The backend uses **SQLAlchemy 2.0 ORM** with a database-agnostic repository design. The database connection URL is controlled by the `DATABASE_URL` environment variable:
@@ -634,6 +647,31 @@ Run `make help` to inspect all available targets:
 ---
 
 ## ❓ Troubleshooting & FAQ
+
+### 📌 Frequently Asked Questions (Quick Answers)
+
+#### 1. Which command do you use to start the frontend?
+- **Using Makefile:** `make dev-frontend`
+- **Manual (npm):** `cd frontend && npm run dev`
+- *Runs the Vite development server on `http://localhost:5173`.*
+
+#### 2. Which command do you use to start the backend?
+- **Using Makefile:** `make dev-backend`
+- **Manual (uv):** `cd backend && uv run uvicorn app.main:app --reload --port 8000`
+- *Runs the FastAPI backend with Uvicorn on `http://localhost:8000`.*
+
+#### 3. Which URL does the frontend use to talk to the backend?
+- **`http://localhost:8000`**
+- *Configured as `BASE_URL` in [`frontend/src/api/client.ts`](frontend/src/api/client.ts).*
+
+#### 4. Which command do you use for running tests?
+- **Using Makefile:** `make test`
+- **Manual (pytest):** `cd backend && uv run pytest -v`
+- *Executes all 39 automated unit and integration tests across 7 test suites.*
+
+---
+
+### Common Troubleshooting Issues
 
 ### 1. Port Conflicts (8000 or 5173 already in use)
 - **Backend (Port 8000):** If port 8000 is occupied, you can run uvicorn on another port:

@@ -8,8 +8,8 @@ export function PublicLayout() {
     <div className="app-shell">
       <header className="site-header">
         <Link to="/" className="brand">
-          <span className="brand-icon">🏆</span>
-          <span>League Scoreboard</span>
+          <span className="brand-icon">⚡</span>
+          <span>KickPulse</span>
         </Link>
         <nav className="main-nav">
           <NavLink to="/" end>Home</NavLink>
@@ -31,7 +31,7 @@ export function PublicLayout() {
         <Outlet />
       </main>
       <footer className="site-footer">
-        Football League Scoreboard
+        KickPulse — Live Sports League Scoreboard
       </footer>
     </div>
   );
@@ -41,7 +41,16 @@ export function AdminLayout() {
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
-        <Link to="/" className="brand compact">
+        <div style={{ marginBottom: '1.25rem' }}>
+          <Link to="/admin" className="brand" style={{ textDecoration: 'none' }}>
+            <span className="brand-icon">⚡</span>
+            <span>KickPulse</span>
+          </Link>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: '0.2rem' }}>
+            Admin Portal
+          </div>
+        </div>
+        <Link to="/" className="brand compact" style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
           ← Public site
         </Link>
         <nav className="admin-nav">

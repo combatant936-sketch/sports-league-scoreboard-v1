@@ -21,7 +21,7 @@ export function HomePage() {
     <div className="page">
       <section className="hero">
         <div>
-          <p className="eyebrow">{league.data?.season} Season</p>
+          <p className="eyebrow">KickPulse • {league.data?.season} Season</p>
           <h1>{league.data?.name}</h1>
           <p className="hero-meta">
             Status: <span className={`league-status status-${league.data?.status}`}>{league.data?.status}</span>
