@@ -703,7 +703,3 @@ rm backend/scoreboard.db
 CORS is pre-configured in `backend/app/main.py` for `http://localhost:5173` and `http://127.0.0.1:5173`. If you access the frontend using a custom host or port, add your origin to the `allow_origins` list in `backend/app/main.py`.
 
 ---
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
